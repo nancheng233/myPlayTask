@@ -3,4 +3,11 @@
     <string name="Hello_World">Hello, world!</string>
     <string name="javaTestText">Hello world!</string>
     <string name="Hello_Android">Hello Android!</string>
+    <string name="Hello">Hello</string>
+    <string name="JNU">JNU</string>
+    <string name="change_text">change text</string>
+    <string name="change_view_title">系统提示</string>
+    <string name="change_view_content">交换成功！</string>
+    <string name="change_view_cancel">取消</string>
+    <string name="change_view_sure">确定</string>
 </resources>
