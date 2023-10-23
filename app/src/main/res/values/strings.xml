@@ -10,4 +10,5 @@
     <string name="change_view_content">交换成功！</string>
     <string name="change_view_cancel">取消</string>
     <string name="change_view_sure">确定</string>
+    <string name="shop_item_picture">商品图示</string>
 </resources>
