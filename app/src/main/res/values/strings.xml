@@ -8,7 +8,11 @@
     <string name="change_text">change text</string>
     <string name="change_view_title">系统提示</string>
     <string name="change_view_content">交换成功！</string>
-    <string name="change_view_cancel">取消</string>
-    <string name="change_view_sure">确定</string>
     <string name="shop_item_picture">商品图示</string>
+    <string name="write_your_shop_item_name">你的商品名称</string>
+    <string name="cancel">取消</string>
+    <string name="sure">确认</string>
+    <string name="write_your_shop_item_price">你的商品价格</string>
+    <string name="write_your_shop_item_name_here">在这写下你的商品名</string>
+    <string name="write_your_shop_item_price_here">在这写下你的商品价格</string>
 </resources>
