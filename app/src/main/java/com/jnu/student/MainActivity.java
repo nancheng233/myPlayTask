@@ -21,15 +21,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jnu.student.myclass.ShopItem;
+import com.jnu.student.myclass.my_DateSave;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    List<ShopItem> shopItems = new ArrayList<>();
-    ShopItemAdapter shopItemAdapter = new ShopItemAdapter(shopItems);
+    ArrayList<ShopItem> shopItems = new ArrayList<>();
+    ShopItemAdapter shopItemAdapter;
+    int my_position;
+    int my_cass;
+
+    my_DateSave my_dateSave = new my_DateSave(MainActivity.this);
 
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -38,13 +42,25 @@ public class MainActivity extends AppCompatActivity {
                     Intent data = result.getData();
                     // 在这里处理返回的数据
                     if (data != null) {
-                        String string1 = data.getStringExtra("name");
-                        String string2 = data.getStringExtra("price");
-                        // 在这里使用这两个字符串
-                        ShopItem shopItem = new ShopItem(R.drawable.bai_cai, string1, string2);
-                        // 刷新RecyclerView
-                        shopItems.add(shopItems.size(), shopItem);
-                        shopItemAdapter.notifyItemInserted(shopItems.size() - 1);
+                        String name = data.getStringExtra("name");
+                        double price = data.getDoubleExtra("price", 0.0);
+                        switch (my_cass) {
+                            case 1:
+                                // 在这里使用这两个字符串
+                                ShopItem shopItem = new ShopItem(shopItems.get(my_position).getImageResource(), name, price);
+                                // 刷新RecyclerView
+                                shopItems.add(shopItems.size(), shopItem);
+                                shopItemAdapter.notifyItemInserted(shopItems.size() - 1);
+                                my_dateSave.save(shopItems);
+                                break;
+                            case 2:
+                                shopItems.get(my_position).setName(name);
+                                shopItems.get(my_position).setPrice(price);
+                                shopItemAdapter.notifyItemChanged(my_position);
+                                my_dateSave.save(shopItems);
+                                break;
+                        }
+                        my_dateSave.save(shopItems);
                     }
                 }
             });
@@ -54,11 +70,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        shopItems.add(new ShopItem(R.drawable.bai_cai, "白菜", "1"));
-        shopItems.add(new ShopItem(R.drawable.luo_bo, "萝卜", "2"));
-        shopItems.add(new ShopItem(R.drawable.tu_dou, "土豆", "3"));
+        shopItems = my_dateSave.load();
+        if (shopItems.size() == 0){
+            shopItems.add(new ShopItem(R.drawable.bai_cai, "白菜", 1));
+            shopItems.add(new ShopItem(R.drawable.luo_bo, "萝卜", 2));
+            shopItems.add(new ShopItem(R.drawable.tu_dou, "土豆", 3));
+        }
 
         // 填充shopItems列表...
+        shopItemAdapter = new ShopItemAdapter(shopItems);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(shopItemAdapter);
@@ -70,10 +90,10 @@ public class MainActivity extends AppCompatActivity {
 
     // RecyclerView的Adapter
     public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ShopItemViewHolder> {
-        List<ShopItem> shopItems;
+        ArrayList<ShopItem> shopItems;
 
 
-        public ShopItemAdapter(List<ShopItem> shopItems) {
+        public ShopItemAdapter(ArrayList<ShopItem> shopItems) {
             this.shopItems = shopItems;
         }
 
@@ -95,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             ShopItem currentItem = shopItems.get(position);
             holder.imageView.setImageResource(currentItem.getImageResource());
             holder.name.setText(currentItem.getName());
-            holder.price.setText(currentItem.getPrice());
+            holder.price.setText(String.valueOf(currentItem.getPrice()));
         }
 
 
@@ -144,22 +164,29 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
-                int position = getAdapterPosition();
+                my_position = getAdapterPosition();
                 Context context = itemView.getContext();
                 Intent intent = new Intent(context, forShopItem.class);
                 switch (menuItem.getItemId()) {
                     case 1:
+                        my_cass = 1;
                         Toast.makeText(context, "添加中...", Toast.LENGTH_SHORT).show();
                         activityResultLauncher.launch(intent);
                         break;
                     case 2:
+                        my_cass = 2;
                         Toast.makeText(context, "修改中...", Toast.LENGTH_SHORT).show();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("name", shopItems.get(my_position).getName());
+                        bundle.putDouble("price", shopItems.get(my_position).getPrice());
+                        intent.putExtras(bundle);
                         activityResultLauncher.launch(intent);
                         break;
                     case 3:
                         Toast.makeText(context, "删除中...", Toast.LENGTH_SHORT).show();
-                        shopItems.remove(position);
-                        shopItemAdapter.notifyItemRemoved(position);
+                        shopItems.remove(my_position);
+                        shopItemAdapter.notifyItemRemoved(my_position);
+                        my_dateSave.save(shopItems);
                         break;
                 }
                 return false;

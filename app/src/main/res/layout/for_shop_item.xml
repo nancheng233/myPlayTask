@@ -65,7 +65,7 @@
         android:autofillHints="none"
         android:ems="10"
         android:hint="@string/write_your_shop_item_price_here"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:minHeight="48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shop_item_price" />

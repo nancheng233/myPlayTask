@@ -1,11 +1,15 @@
 package com.jnu.student.myclass;
 
-public class ShopItem {
-    private final int imageResource;
-    private final String name;
-    private final String price;
+import java.io.Serializable;
 
-    public ShopItem(int imageResource, String name, String price) {
+public class ShopItem implements Serializable {
+    // 序列化需要的UID值
+    private static final long serialVersionUID = 114514L;
+    private int imageResource;
+    private String name;
+    private double price;
+
+    public ShopItem(int imageResource, String name, double price) {
         this.imageResource = imageResource;
         this.name = name;
         this.price = price;
@@ -19,7 +23,17 @@ public class ShopItem {
         return name;
     }
 
-    public String getPrice(){
+    public double getPrice(){
         return price;
+    }
+
+    public void setImageResource(int imageResource) {
+        this.imageResource = imageResource;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

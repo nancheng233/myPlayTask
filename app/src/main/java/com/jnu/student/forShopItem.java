@@ -18,12 +18,21 @@ public class forShopItem extends AppCompatActivity {
         EditText shop_item_name = findViewById(R.id.name);
         EditText shop_item_price = findViewById(R.id.price);
 
+        // 如果是修改模式
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            String name = bundle.getString("name");
+            double price = bundle.getDouble("price");
+            shop_item_name.setText(name);
+            shop_item_price.setText(String.valueOf(price));
+        }
+
         // 当用户完成输入后，你可以创建一个Intent，并添加数据
         Button button = findViewById(R.id.true_button);
         button.setOnClickListener(view -> {
             Intent data = new Intent();
             data.putExtra("name", shop_item_name.getText().toString());
-            data.putExtra("price", shop_item_price.getText().toString());
+            data.putExtra("price", Double.valueOf(shop_item_price.getText().toString()));
 
             // 然后，你可以设置结果码和数据
             setResult(Activity.RESULT_OK, data);
