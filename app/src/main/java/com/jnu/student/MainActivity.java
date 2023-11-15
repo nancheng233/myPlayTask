@@ -1,198 +1,69 @@
 package com.jnu.student;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.jnu.student.myclass.ShopItem;
-import com.jnu.student.myclass.my_DateSave;
-
-import java.util.ArrayList;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<ShopItem> shopItems = new ArrayList<>();
-    ShopItemAdapter shopItemAdapter;
-    int my_position;
-    int my_cass;
-
-    my_DateSave my_dateSave = new my_DateSave(MainActivity.this);
-
-    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    // 在这里处理返回的数据
-                    if (data != null) {
-                        String name = data.getStringExtra("name");
-                        double price = data.getDoubleExtra("price", 0.0);
-                        switch (my_cass) {
-                            case 1:
-                                // 在这里使用这两个字符串
-                                ShopItem shopItem = new ShopItem(shopItems.get(my_position).getImageResource(), name, price);
-                                // 刷新RecyclerView
-                                shopItems.add(shopItems.size(), shopItem);
-                                shopItemAdapter.notifyItemInserted(shopItems.size() - 1);
-                                my_dateSave.save(shopItems);
-                                break;
-                            case 2:
-                                shopItems.get(my_position).setName(name);
-                                shopItems.get(my_position).setPrice(price);
-                                shopItemAdapter.notifyItemChanged(my_position);
-                                my_dateSave.save(shopItems);
-                                break;
-                        }
-                        my_dateSave.save(shopItems);
-                    }
-                }
-            });
-
+    private String[] tabHeaderStrings = {"Shopping items","baidu maps","News"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        shopItems = my_dateSave.load();
-        if (shopItems.size() == 0){
-            shopItems.add(new ShopItem(R.drawable.bai_cai, "白菜", 1));
-            shopItems.add(new ShopItem(R.drawable.luo_bo, "萝卜", 2));
-            shopItems.add(new ShopItem(R.drawable.tu_dou, "土豆", 3));
-        }
+        // 获取ViewPager2和TabLayout的实例
+        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        // 创建适配器
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), getLifecycle());
+        viewPager.setAdapter(fragmentAdapter);
 
-        // 填充shopItems列表...
-        shopItemAdapter = new ShopItemAdapter(shopItems);
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(shopItemAdapter);
+        // 将TabLayout和ViewPager2进行关联
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(tabHeaderStrings[position])
+        ).attach();
 
-        // 在Activity中注册需要上下文菜单的View
-        registerForContextMenu(recyclerView);
     }
 
-
-    // RecyclerView的Adapter
-    public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ShopItemViewHolder> {
-        ArrayList<ShopItem> shopItems;
-
-
-        public ShopItemAdapter(ArrayList<ShopItem> shopItems) {
-            this.shopItems = shopItems;
+    public class FragmentAdapter extends FragmentStateAdapter {
+        private static final int NUM_TABS = 3;
+        public FragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+            super(fragmentManager, lifecycle);
         }
 
-
-        @ Override
-        @ NonNull
-        // 这个方法是当RecyclerView需要创建新的列表项（即一个新的ViewHolder）时会被调用。
-        // 这个方法会创建并初始化ViewHolder及其关联的视图，但不会填充视图的内容，因为ViewHolder此时尚未绑定到具体数据。
-        public ShopItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.for_recycle_view, parent, false);
-            return new ShopItemViewHolder(view);
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            // 根据位置返回对应的Fragment实例
+            switch (position) {
+                case 0:
+                    return new ShoppingListFragment();
+                case 1:
+                    return new BaiduMapFragment();
+                case 2:
+                    return new WebViewFragment();
+                default:
+                    return null;
+            }
         }
 
-
-        @ Override
-        // 这个方法是当RecyclerView需要将ViewHolder与数据进行绑定时会被调用。
-        public void onBindViewHolder(ShopItemViewHolder holder, int position) {
-            ShopItem currentItem = shopItems.get(position);
-            holder.imageView.setImageResource(currentItem.getImageResource());
-            holder.name.setText(currentItem.getName());
-            holder.price.setText(String.valueOf(currentItem.getPrice()));
-        }
-
-
-        @ Override
+        @Override
         public int getItemCount() {
-            return shopItems.size();
-        }
-
-
-        // 这是你自定义的ViewHolder类。每个列表项在屏幕上都由一个ViewHolder对象表示。
-        // 当创建一个新的ViewHolder时，它并没有任何关联的数据。
-        // 当RecyclerView准备将它显示在屏幕上时，就会调用上面提到的onBindViewHolder()方法，将数据绑定到这个ViewHolder。
-        public class ShopItemViewHolder extends RecyclerView.ViewHolder
-                implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
-            ImageView imageView;
-            TextView name;
-            TextView price;
-
-
-            public ShopItemViewHolder(View itemView) {
-                super(itemView);
-                imageView = itemView.findViewById(R.id.imageView);
-                name = itemView.findViewById(R.id.name);
-                price = itemView.findViewById(R.id.price);
-
-                // 启用长按点击监听
-                itemView.setOnCreateContextMenuListener(this);
-            }
-
-            @Override
-            // 长按后生成菜单
-            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-                // 设置介绍项
-                contextMenu.setHeaderTitle("操作");
-
-                // 创建菜单项
-                MenuItem append = contextMenu.add(contextMenu.NONE, 1, 1, "增加");
-                MenuItem edit = contextMenu.add(contextMenu.NONE, 2, 2, "修改");
-                MenuItem delete = contextMenu.add(contextMenu.NONE, 3, 3, "删除");
-
-                // 为菜单项启用点击监听
-                append.setOnMenuItemClickListener(this);
-                edit.setOnMenuItemClickListener(this);
-                delete.setOnMenuItemClickListener(this);
-            }
-
-            @Override
-            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
-                my_position = getAdapterPosition();
-                Context context = itemView.getContext();
-                Intent intent = new Intent(context, forShopItem.class);
-                switch (menuItem.getItemId()) {
-                    case 1:
-                        my_cass = 1;
-                        Toast.makeText(context, "添加中...", Toast.LENGTH_SHORT).show();
-                        activityResultLauncher.launch(intent);
-                        break;
-                    case 2:
-                        my_cass = 2;
-                        Toast.makeText(context, "修改中...", Toast.LENGTH_SHORT).show();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("name", shopItems.get(my_position).getName());
-                        bundle.putDouble("price", shopItems.get(my_position).getPrice());
-                        intent.putExtras(bundle);
-                        activityResultLauncher.launch(intent);
-                        break;
-                    case 3:
-                        Toast.makeText(context, "删除中...", Toast.LENGTH_SHORT).show();
-                        shopItems.remove(my_position);
-                        shopItemAdapter.notifyItemRemoved(my_position);
-                        my_dateSave.save(shopItems);
-                        break;
-                }
-                return false;
-            }
+            return NUM_TABS;
         }
     }
+
 }
 
 
