@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -47,8 +48,15 @@ public class WebViewFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_web_view, container, false);
         WebView webView = rootView.findViewById(R.id.webView);
-        webView.getSettings().setJavaScriptEnabled(true); // 启用JavaScript支持
-        webView.setWebViewClient(new WebViewClient()); // 设置WebView客户端
+
+        // 配置WebView的设置，在这里启用JavaScript
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        // 设置WebView客户端，以便在WebView中显示网页而不是打开默认浏览器
+        webView.setWebViewClient(new WebViewClient());
+
+        // 加载要显示的网页加载要显示的网页
         webView.loadUrl("http://news.sina.com.cn/");
         return rootView;
     }
