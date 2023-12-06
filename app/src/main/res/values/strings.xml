@@ -16,6 +16,10 @@
     <string name="write_your_shop_item_name_here">在这写下你的商品名</string>
     <string name="write_your_shop_item_price_here">在这写下你的商品价格</string>
     <string name="show_Tab">我的标签页</string>
+    <string name="assignment">任务</string>
+    <string name="card_giftcard">奖励</string>
+    <string name="show_chart">统计</string>
+    <string name="account_box">我</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
