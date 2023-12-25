@@ -114,8 +114,6 @@ public class ShoppingListFragment extends Fragment {
         shopItemAdapter = new ShopItemAdapter(shopItems);
         recyclerView.setAdapter(shopItemAdapter);
 
-        // 在Activity中注册需要上下文菜单的View
-//        registerForContextMenu(recyclerView);
         return rootView;
     }
 

@@ -5,66 +5,80 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private String[] tabHeaderStrings = {"Shopping items","baidu maps","News"};
+    private ViewPager2 viewPager;
+    private BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 获取ViewPager2和TabLayout的实例
-        ViewPager2 viewPager = findViewById(R.id.view_pager);
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
-        // 创建适配器
-        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), getLifecycle());
-        viewPager.setAdapter(fragmentAdapter);
+        viewPager = findViewById(R.id.view_pager);
+        bottomNavigationView = findViewById(R.id.nav_view);
 
-        // 将TabLayout和ViewPager2进行关联
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText(tabHeaderStrings[position])
-        ).attach();
+        // 设置ViewPager的Adapter
+        viewPager.setAdapter(new ViewPagerAdapter(this));
 
+        // 设置BottomNavigationView的选择监听
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.navigation_item1) {
+                viewPager.setCurrentItem(0);
+                return true;
+            } else if (id == R.id.navigation_item2) {
+                viewPager.setCurrentItem(1);
+                return true;
+            } else if (id == R.id.navigation_item3) {
+                viewPager.setCurrentItem(2);
+                return true;
+            } else if (id == R.id.navigation_item4) {
+                viewPager.setCurrentItem(3);
+                return true;
+            }
+            return false;
+        });
     }
 
-    public class FragmentAdapter extends FragmentStateAdapter {
-        private static final int NUM_TABS = 3;
-        public FragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
-            super(fragmentManager, lifecycle);
+
+    // ViewPagerAdapter.java
+    class ViewPagerAdapter extends FragmentStateAdapter {
+
+        public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+            super(fragmentActivity);
         }
 
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            // 根据位置返回对应的Fragment实例
             switch (position) {
                 case 0:
-                    return new ShoppingListFragment();
+                    return new TaskFragment();
                 case 1:
-                    return new BaiduMapFragment();
+                    return new AwardFragment();
                 case 2:
-                    return new WebViewFragment();
-                default:
-                    return null;
+                    return new StatisticsFragment();
+                case 3:
+                    return new MeFragment();
             }
+            return null;
         }
 
         @Override
         public int getItemCount() {
-            return NUM_TABS;
+            return 4;
         }
     }
-
 }
+
 
 
 
