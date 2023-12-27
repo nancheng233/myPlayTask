@@ -10,18 +10,45 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.jnu.student.myclass.Record;
+import com.jnu.student.myclass.my_DateSave;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
-
+    private String recordString = "record.dat";
+    private double value = 0;
+    private ArrayList<Record> record = new ArrayList<>();
     private ViewPager2 viewPager;
     private BottomNavigationView bottomNavigationView;
+    my_DateSave myDateSave;
+    public void save_record(ArrayList<Record> my_record) {
+        myDateSave.save_Record(my_record, recordString);
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public ArrayList<Record> getRecord() {
+        return record;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 获得数据
+        myDateSave = new my_DateSave(this);
+        record = myDateSave.load_Record(recordString);
+
+        // 获取各个组件
         viewPager = findViewById(R.id.view_pager);
         bottomNavigationView = findViewById(R.id.nav_view);
 

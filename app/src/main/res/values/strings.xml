@@ -9,17 +9,28 @@
     <string name="change_view_title">系统提示</string>
     <string name="change_view_content">交换成功！</string>
     <string name="shop_item_picture">商品图示</string>
-    <string name="write_your_shop_item_name">你的商品名称</string>
     <string name="cancel">取消</string>
     <string name="sure">确认</string>
-    <string name="write_your_shop_item_price">你的商品价格</string>
-    <string name="write_your_shop_item_name_here">在这写下你的商品名</string>
-    <string name="write_your_shop_item_price_here">在这写下你的商品价格</string>
+    <string name="write_your_shop_item_name">你的描述</string>
+    <string name="write_your_count">你的最多完成次数</string>
+    <string name="write_your_shop_item_price">你的代币管理</string>
+    <string name="write_your_shop_item_name_here">在这写下你的描述</string>
+    <string name="write_your_count_here">在这里写下你的最多完成次数</string>
+    <string name="write_your_shop_item_price_here">在这写下你的代币管理</string>
     <string name="show_Tab">我的标签页</string>
     <string name="assignment">任务</string>
     <string name="card_giftcard">奖励</string>
     <string name="show_chart">统计</string>
     <string name="account_box">我</string>
+    <string name="count_format">%1$d/%2$d</string>
+    <string name="negative_cost">%.1f</string>
+    <string name="positive_cost">+%.1f</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_task">添加任务</string>
+    <string name="add_daily_task">添加每日任务</string>
+    <string name="add_weekly_task">添加每周任务</string>
+    <string name="add_normal_task">添加普通任务</string>
+    <string name="add_copy_task">添加副本任务</string>
+    <string name="add_award">添加奖励</string>
 </resources>

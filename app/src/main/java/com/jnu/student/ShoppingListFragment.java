@@ -3,7 +3,16 @@ package com.jnu.student;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -12,19 +21,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.jnu.student.myclass.Record;
 import com.jnu.student.myclass.ShopItem;
 import com.jnu.student.myclass.my_DateSave;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,10 +34,12 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class ShoppingListFragment extends Fragment {
+    static String DataName = "shopItems.dat";
     ArrayList<ShopItem> shopItems = new ArrayList<>();
     ShopItemAdapter shopItemAdapter;
     int my_position;
-    int my_cass;
+    int my_case;
+    MainActivity mainActivity;
 
     my_DateSave my_dateSave;
 
@@ -47,27 +51,39 @@ public class ShoppingListFragment extends Fragment {
                     // 在这里处理返回的数据
                     if (data != null) {
                         String name = data.getStringExtra("name");
+                        int count = data.getIntExtra("count", 0);
                         double price = data.getDoubleExtra("price", 0.0);
-                        switch (my_cass) {
+                        switch (my_case) {
                             case 1:
                                 // 在这里使用这两个字符串
-                                ShopItem shopItem = new ShopItem(shopItems.get(my_position).getImageResource(), name, price);
+                                ShopItem shopItem = new ShopItem(name, count, price);
                                 // 刷新RecyclerView
                                 shopItems.add(shopItems.size(), shopItem);
                                 shopItemAdapter.notifyItemInserted(shopItems.size() - 1);
-                                my_dateSave.save(shopItems);
                                 break;
                             case 2:
                                 shopItems.get(my_position).setName(name);
+                                shopItems.get(my_position).setMax_count(count);
                                 shopItems.get(my_position).setPrice(price);
                                 shopItemAdapter.notifyItemChanged(my_position);
-                                my_dateSave.save(shopItems);
                                 break;
                         }
-                        my_dateSave.save(shopItems);
+                        my_dateSave.save_shop_item(shopItems, DataName);
                     }
                 }
             });
+
+    public static String getDataName() {
+        return DataName;
+    }
+
+    public ArrayList<ShopItem> getShopItems() {
+        return shopItems;
+    }
+
+    public ShopItemAdapter getShopItemAdapter() {
+        return shopItemAdapter;
+    }
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -97,7 +113,6 @@ public class ShoppingListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View rootView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
@@ -105,11 +120,11 @@ public class ShoppingListFragment extends Fragment {
 
         // 填充shopItems列表...
         my_dateSave = new my_DateSave(requireActivity());
-        shopItems = my_dateSave.load();
+        shopItems = my_dateSave.load_shop_item(DataName);
         if (shopItems.size() == 0){
-            shopItems.add(new ShopItem(R.drawable.bai_cai, "白菜", 1));
-            shopItems.add(new ShopItem(R.drawable.luo_bo, "萝卜", 2));
-            shopItems.add(new ShopItem(R.drawable.tu_dou, "土豆", 3));
+            shopItems.add(new ShopItem("深蹲50个", 99,  10.5));
+            shopItems.add(new ShopItem("跑步15分钟", 99, 15.0));
+            shopItems.add(new ShopItem("俯卧撑30个", 99, 15.5));
         }
         shopItemAdapter = new ShopItemAdapter(shopItems);
         recyclerView.setAdapter(shopItemAdapter);
@@ -120,11 +135,9 @@ public class ShoppingListFragment extends Fragment {
     public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ShopItemViewHolder> {
         ArrayList<ShopItem> shopItems;
 
-
         public ShopItemAdapter(ArrayList<ShopItem> shopItems) {
             this.shopItems = shopItems;
         }
-
 
         @ Override
         @ NonNull
@@ -141,9 +154,24 @@ public class ShoppingListFragment extends Fragment {
         // 这个方法是当RecyclerView需要将ViewHolder与数据进行绑定时会被调用。
         public void onBindViewHolder(ShopItemViewHolder holder, int position) {
             ShopItem currentItem = shopItems.get(position);
-            holder.imageView.setImageResource(currentItem.getImageResource());
+
+            // 任务描述和最多次数
             holder.name.setText(currentItem.getName());
-            holder.price.setText(String.valueOf(currentItem.getPrice()));
+            String countText = holder.itemView.getContext().getString(R.string.count_format,
+                    currentItem.getMy_count(), currentItem.getMax_count());
+            holder.count.setText(countText);
+
+            // 奖励或者代价
+            double cost = currentItem.getPrice();
+            if (cost > 0) {
+                holder.price.setTextColor(Color.GREEN);
+                String costFormat = getResources().getString(R.string.positive_cost);
+                holder.price.setText(String.format(costFormat, cost));
+            } else if (cost < 0) {
+                holder.price.setTextColor(Color.RED);
+                String costFormat = getResources().getString(R.string.negative_cost);
+                holder.price.setText(String.format(costFormat, cost));
+            }
         }
 
 
@@ -158,16 +186,48 @@ public class ShoppingListFragment extends Fragment {
         // 当RecyclerView准备将它显示在屏幕上时，就会调用上面提到的onBindViewHolder()方法，将数据绑定到这个ViewHolder。
         public class ShopItemViewHolder extends RecyclerView.ViewHolder
                 implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
-            ImageView imageView;
             TextView name;
+            TextView count;
             TextView price;
+            CheckBox checkBox;
 
 
             public ShopItemViewHolder(View itemView) {
                 super(itemView);
-                imageView = itemView.findViewById(R.id.imageView);
-                name = itemView.findViewById(R.id.name);
-                price = itemView.findViewById(R.id.price);
+                name = itemView.findViewById(R.id.description);
+                count = itemView.findViewById(R.id.count);
+                price = itemView.findViewById(R.id.score);
+                checkBox = itemView.findViewById(R.id.checkbox);
+
+                // 监听按钮点击
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked && shopItems.get(getAdapterPosition()).getMy_count()
+                            <= shopItems.get(getAdapterPosition()).getMax_count()) {
+                        // CheckBox被选中且次数小于规定次数
+                        // 设置列表里面的count次数
+                        shopItems.get(getAdapterPosition()).addMy_count();
+                        shopItemAdapter.notifyItemChanged(getAdapterPosition());
+                        my_dateSave.save_shop_item(shopItems, DataName);
+
+                        // 获取MainActivity实例并调用getValues()方法
+                        mainActivity = (MainActivity) getActivity();
+                        double value = mainActivity.getValue();
+
+                        // 更新数据
+                        ArrayList<Record> records = mainActivity.getRecord();
+                        double its_value = shopItems.get(getAdapterPosition()).getPrice();
+                        value += its_value;
+                        Record record = new Record(new Date(System.currentTimeMillis()),
+                                shopItems.get(getAdapterPosition()).getName(), its_value);
+
+                        // 保存数据
+                        mainActivity.setValue(value);
+                        records.add(record);
+                        mainActivity.save_record(records);
+                    } else {
+                        // CheckBox被取消选中
+                    }
+                });
 
                 // 启用长按点击监听
                 itemView.setOnCreateContextMenuListener(this);
@@ -197,15 +257,16 @@ public class ShoppingListFragment extends Fragment {
                 Intent intent = new Intent(context, forShopItem.class);
                 switch (menuItem.getItemId()) {
                     case 1:
-                        my_cass = 1;
+                        my_case = 1;
                         Toast.makeText(context, "添加中...", Toast.LENGTH_SHORT).show();
                         activityResultLauncher.launch(intent);
                         break;
                     case 2:
-                        my_cass = 2;
+                        my_case = 2;
                         Toast.makeText(context, "修改中...", Toast.LENGTH_SHORT).show();
                         Bundle bundle = new Bundle();
                         bundle.putString("name", shopItems.get(my_position).getName());
+                        bundle.putInt("count", shopItems.get(my_position).getMax_count());
                         bundle.putDouble("price", shopItems.get(my_position).getPrice());
                         intent.putExtras(bundle);
                         activityResultLauncher.launch(intent);
@@ -214,7 +275,7 @@ public class ShoppingListFragment extends Fragment {
                         Toast.makeText(context, "删除中...", Toast.LENGTH_SHORT).show();
                         shopItems.remove(my_position);
                         shopItemAdapter.notifyItemRemoved(my_position);
-                        my_dateSave.save(shopItems);
+                        my_dateSave.save_shop_item(shopItems, DataName);
                         break;
                 }
                 return false;

@@ -14,9 +14,9 @@ public class my_DateSave {
         this.context = context;
     }
 
-    public void save (ArrayList<ShopItem> data) {
+    public void save_shop_item(ArrayList<ShopItem> data, String name) {
         try {
-            FileOutputStream fos = context.openFileOutput("shopItems.dat", Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(name, Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(data);
             oos.close();
@@ -27,12 +27,40 @@ public class my_DateSave {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<ShopItem> load () {
+    public ArrayList<ShopItem> load_shop_item(String name) {
         ArrayList<ShopItem> data = new ArrayList<>();
         try {
-            FileInputStream fis = context.openFileInput("shopItems.dat");
+            FileInputStream fis = context.openFileInput(name);
             ObjectInputStream ois = new ObjectInputStream(fis);
             data = (ArrayList<ShopItem>) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+
+    public void save_Record(ArrayList<Record> data, String name) {
+        try {
+            FileOutputStream fos = context.openFileOutput(name, Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(data);
+            oos.close();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<Record> load_Record(String name) {
+        ArrayList<Record> data = new ArrayList<>();
+        try {
+            FileInputStream fis = context.openFileInput(name);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            data = (ArrayList<Record>) ois.readObject();
             ois.close();
             fis.close();
         } catch (Exception e){
