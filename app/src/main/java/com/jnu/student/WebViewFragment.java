@@ -205,7 +205,7 @@ public class WebViewFragment extends Fragment {
                 CheckBox checkBox = itemView.findViewById(R.id.checkbox);
                 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked && shopItems.get(getAdapterPosition()).getMy_count()
-                            <= shopItems.get(getAdapterPosition()).getMax_count()) {
+                            < shopItems.get(getAdapterPosition()).getMax_count()) {
                         // CheckBox被选中且次数小于规定次数
                         shopItems.get(getAdapterPosition()).addMy_count();
                         shopItemAdapter.notifyItemChanged(getAdapterPosition());

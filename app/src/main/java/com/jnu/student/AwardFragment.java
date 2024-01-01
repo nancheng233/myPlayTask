@@ -280,7 +280,7 @@ public class AwardFragment extends Fragment {
                 // 监听按钮点击
                 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     if (isChecked && shopItems.get(getAdapterPosition()).getMy_count()
-                            <= shopItems.get(getAdapterPosition()).getMax_count()) {
+                            < shopItems.get(getAdapterPosition()).getMax_count()) {
                         // CheckBox被选中且次数小于规定次数
                         // 设置列表里面的count次数
                         shopItems.get(getAdapterPosition()).addMy_count();
