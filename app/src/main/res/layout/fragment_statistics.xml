@@ -14,4 +14,13 @@
         app:layout_constraintTop_toTopOf="parent"
         android:longClickable="true"/>
 
+    <TextView
+        android:id="@+id/textViewToken"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:padding="8dp" />
+
 </FrameLayout>

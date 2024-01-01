@@ -17,14 +17,21 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
-    private String recordString = "record.dat";
+    private String recordString = "records.dat";
     private double value = 0;
-    private ArrayList<Record> record = new ArrayList<>();
+    private ArrayList<Record> records = new ArrayList<>();
     private ViewPager2 viewPager;
     private BottomNavigationView bottomNavigationView;
+    StatisticsFragment statisticsFragment;
     my_DateSave myDateSave;
     public void save_record(ArrayList<Record> my_record) {
         myDateSave.save_Record(my_record, recordString);
+
+        // 更新账本
+        if(statisticsFragment != null) {
+            statisticsFragment.getShopItemAdapter().notifyItemInserted(0);
+            statisticsFragment.setToken_num(value);
+        }
     }
 
     public double getValue() {
@@ -35,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         this.value = value;
     }
 
-    public ArrayList<Record> getRecord() {
-        return record;
+    public ArrayList<Record> getRecords() {
+        return records;
     }
 
     @Override
@@ -46,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         // 获得数据
         myDateSave = new my_DateSave(this);
-        record = myDateSave.load_Record(recordString);
+        records = myDateSave.load_Record(recordString);
+        if(records.size() != 0) {
+            value = records.get(records.size() - 1).getNow_value();
+        }
 
         // 获取各个组件
         viewPager = findViewById(R.id.view_pager);
@@ -92,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return new AwardFragment();
                 case 2:
-                    return new StatisticsFragment();
+                    statisticsFragment = new StatisticsFragment();
+                    return statisticsFragment;
                 case 3:
                     return new MeFragment();
             }

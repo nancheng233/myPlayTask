@@ -214,15 +214,15 @@ public class ShoppingListFragment extends Fragment {
                         double value = mainActivity.getValue();
 
                         // 更新数据
-                        ArrayList<Record> records = mainActivity.getRecord();
+                        ArrayList<Record> records = mainActivity.getRecords();
                         double its_value = shopItems.get(getAdapterPosition()).getPrice();
                         value += its_value;
                         Record record = new Record(new Date(System.currentTimeMillis()),
-                                shopItems.get(getAdapterPosition()).getName(), its_value);
+                                shopItems.get(getAdapterPosition()).getName(), its_value, value);
 
                         // 保存数据
                         mainActivity.setValue(value);
-                        records.add(record);
+                        records.add(0, record);
                         mainActivity.save_record(records);
                     } else {
                         // CheckBox被取消选中

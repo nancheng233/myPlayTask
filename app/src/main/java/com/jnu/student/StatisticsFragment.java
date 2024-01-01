@@ -27,6 +27,32 @@ public class StatisticsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    ShopItemAdapter shopItemAdapter;
+    double token_num;
+    MainActivity mainActivity;
+    TextView token;
+
+    public ShopItemAdapter getShopItemAdapter() {
+        return shopItemAdapter;
+    }
+
+    public void setToken_num(double token_num) {
+        this.token_num = token_num;
+
+        if (token_num > 0) {
+            token.setTextColor(Color.GREEN);
+            String costFormat = getResources().getString(R.string.positive_token_show);
+            token.setText(String.format(costFormat, token_num));
+        } else if (token_num < 0) {
+            token.setTextColor(Color.RED);
+            String costFormat = getResources().getString(R.string.negative_token_show);
+            token.setText(String.format(costFormat, token_num));
+        } else {
+            token.setTextColor(Color.BLACK);
+            String costFormat = getResources().getString(R.string.negative_token_show);
+            token.setText(String.format(costFormat, token_num));
+        }
+    }
 
     public StatisticsFragment() {
         // Required empty public constructor
@@ -62,9 +88,27 @@ public class StatisticsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
         // 获得账本数据
-        MainActivity mainActivity = (MainActivity) getActivity();
-        ShopItemAdapter shopItemAdapter = new ShopItemAdapter(mainActivity.getRecord());
+        mainActivity = (MainActivity) getActivity();
+        shopItemAdapter = new ShopItemAdapter(mainActivity.getRecords());
         recyclerView.setAdapter(shopItemAdapter);
+
+        // 获得总计代币
+        token_num = mainActivity.getValue();
+        token = rootView.findViewById(R.id.textViewToken);
+
+        if (token_num > 0) {
+            token.setTextColor(Color.GREEN);
+            String costFormat = getResources().getString(R.string.positive_token_show);
+            token.setText(String.format(costFormat, token_num));
+        } else if (token_num < 0) {
+            token.setTextColor(Color.RED);
+            String costFormat = getResources().getString(R.string.negative_token_show);
+            token.setText(String.format(costFormat, token_num));
+        } else {
+            token.setTextColor(Color.BLACK);
+            String costFormat = getResources().getString(R.string.negative_token_show);
+            token.setText(String.format(costFormat, token_num));
+        }
 
         return rootView;
     }

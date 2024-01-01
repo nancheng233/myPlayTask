@@ -33,4 +33,14 @@
     <string name="add_normal_task">添加普通任务</string>
     <string name="add_copy_task">添加副本任务</string>
     <string name="add_award">添加奖励</string>
+    <string name="negative_token_show">你现在持有的代币数：%.1f</string>
+    <string name="positive_token_show">你现在持有的代币数：+%.1f</string>
+    <string name="tou_xiang_xian_shi">头像显示</string>
+    <string name="use_name">南城</string>
+    <string name="my_money">我的钱包</string>
+    <string name="copy_setting">副本设置</string>
+    <string name="exit_login">退出登录</string>
+    <string name="help">帮助</string>
+    <string name="check_update">检查更新</string>
+    <string name="donate">赞助作者</string>
 </resources>

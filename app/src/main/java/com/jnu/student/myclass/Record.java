@@ -10,11 +10,13 @@ public class Record implements Serializable {
     Date date;
     String describe;
     double change_value;
+    double now_value;
 
-    public Record(Date date, String describe, double change_value) {
+    public Record(Date date, String describe, double change_value, double now_value) {
         this.date = date;
         this.describe = describe;
         this.change_value = change_value;
+        this.now_value = now_value;
     }
 
     public Date getDate() {
@@ -29,6 +31,10 @@ public class Record implements Serializable {
         return change_value;
     }
 
+    public double getNow_value() {
+        return now_value;
+    }
+
     public void setDate(Date date) {
         this.date = date;
     }
@@ -39,5 +45,9 @@ public class Record implements Serializable {
 
     public void setChange_value(double change_value) {
         this.change_value = change_value;
+    }
+
+    public void setNow_value(double now_value) {
+        this.now_value = now_value;
     }
 }
